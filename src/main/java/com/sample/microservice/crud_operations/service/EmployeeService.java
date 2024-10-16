@@ -1,11 +1,17 @@
 package com.sample.microservice.crud_operations.service;
 
+import java.awt.print.Pageable;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.sample.microservice.crud_operations.exception.DuplicateRecordException;
 import com.sample.microservice.crud_operations.main.resource.EmployeeCreateRequest;
 import com.sample.microservice.crud_operations.main.resource.EmployeeCreateResponse;
+import com.sample.microservice.crud_operations.main.resource.EmployeeSearchRequest;
+import com.sample.microservice.crud_operations.main.resource.EmployeeSearchResponse;
 import com.sample.microservice.crud_operations.model.Employee;
 import com.sample.microservice.crud_operations.repository.EmployeeRepository;
 
@@ -45,6 +51,20 @@ public class EmployeeService {
 		employee.setEmployeeDepartment(updatedEmployee.getEmployeeDepartment());
 		Employee response =  repository.save(employee);
 		return new EmployeeCreateResponse(response.getEmployeeId());
+	}
+
+	public EmployeeSearchResponse searchEmployee( EmployeeSearchRequest request) {
+		List<Employee> emps = repository
+				.findByEmployeeIdAndEmployeeNameAndEmployeeSalaryAndEmployeeDepartmentAndEmailId(
+						request.getEmployeeId(),request.getEmployeeName(), request.getEmployeeSalary(), request.getEmployeeDepartment(), request.getEmailId());
+		EmployeeSearchResponse response= new EmployeeSearchResponse();
+		if( null != emps && !emps.isEmpty()) {
+			response.setEmployees(emps);
+		}
+		else {
+			response =null;
+		}
+		return response;
 	}
 
 }
